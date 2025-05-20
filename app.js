@@ -83,7 +83,7 @@ app.post('/messages', async (req, res) => {
 
         // Ensure no more than 5 messages
         if (messages.length >= 5) {
-            console.warn('Warning: message limit', err);
+            console.warn('Warning: message limit');
             messages.shift(); // Remove the oldest message
         }
 
