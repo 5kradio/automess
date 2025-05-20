@@ -6,20 +6,18 @@ const cors = require('cors');
 const app = express();
 const PORT = 3000;
 
-// Middleware to parse JSON body
 app.use(express.json());
 
 const staticPath = path.join(__dirname, '../static');
 console.log('Serving static files from:', staticPath);
 app.use(express.static(staticPath));
 
-// Enable CORS
+
 app.use(cors());
 
-// File path for the messages data
+
 const filePath = path.join(__dirname, 'messages.json');
 
-// Helper function to load messages from the file
 function loadMessages() {
     return new Promise((resolve, reject) => {
         fs.readFile(filePath, 'utf8', (err, data) => {
@@ -37,7 +35,6 @@ function loadMessages() {
     });
 }
 
-// Helper function to save messages to the file
 function saveMessages(messages) {
     return new Promise((resolve, reject) => {
         const jsonData = JSON.stringify({ messages }, null, 2);
@@ -51,9 +48,6 @@ function saveMessages(messages) {
     });
 }
 
-
-
-// Get all messages
 app.get('/messages', async (req, res) => {
     try {
         const data = await loadMessages();
@@ -64,7 +58,6 @@ app.get('/messages', async (req, res) => {
     }
 });
 
-// Add a new message
 app.post('/messages', async (req, res) => {
     let { message, nickname } = req.body;
 
@@ -72,7 +65,6 @@ app.post('/messages', async (req, res) => {
         return res.status(400).json({ error: 'Invalid message' });
     }
 
-    // Default nickname to "Untitled" if missing or not a string
     if (!nickname || typeof nickname !== 'string' || nickname.trim() === '') {
         nickname = 'Untitled';
     }
@@ -81,14 +73,13 @@ app.post('/messages', async (req, res) => {
         const data = await loadMessages();
         const messages = data.messages || [];
 
-        // Ensure no more than 5 messages
         if (messages.length >= 5) {
             console.warn('Warning: message limit');
-            messages.shift(); // Remove the oldest message
+            messages.shift(); 
         }
 
-        // Add new message object
-        messages.push({ nickname, message });
+        const timestamp = new Date().toISOString(); 
+        messages.push({ nickname, message, timestamp });
 
         await saveMessages(messages);
         res.json({ messages });
@@ -98,7 +89,7 @@ app.post('/messages', async (req, res) => {
     }
 });
 
-// Start the server
+
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
