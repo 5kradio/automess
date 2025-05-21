@@ -1,1 +1,3 @@
 # automess
+
+json db*
